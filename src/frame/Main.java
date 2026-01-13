@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
@@ -18,6 +19,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
@@ -29,14 +31,32 @@ public class Main {
 	public static void main(String[] args) {
 		
 		/*
-		 * Deklerēšana priekš Main metodes
+		 * Deklerēšana priekš Main metodes un pamatiem
 		 */
 		
 		JFrame f = new JFrame();
 		JFrame fClose = new JFrame();
+		JPanel pBackground = new JPanel() {
+			
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = -1969924032365564895L;
+			Image background = new ImageIcon(getClass().getResource("/images/startUp.png")).getImage();
+
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                g.drawImage(background, 0, 0, getWidth(), getHeight(), this);
+            }
+        };
 		
+		//Vēlāk nomainīt uz maināmu mainīgu
 		Locale locale = Locale.of("lv");
 		ResourceBundle bundle = ResourceBundle.getBundle("text.text", locale);
+		
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		
 		
 		/*
 		 * Main koda daļa
@@ -53,20 +73,36 @@ public class Main {
 		    e.printStackTrace();
 		}
 		
-		f.setSize(1920, 1080);
+		if(screenSize.width == 1920 && screenSize.height == 1080)
+			f.setExtendedState(JFrame.MAXIMIZED_BOTH);
+		else
+			f.setSize(1920, 1080);
+		
+		f.setContentPane(pBackground);
 		f.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		f.setLayout(null);
+		f.setLayout(new BorderLayout());
 		f.setLocationRelativeTo(null);
 		f.setResizable(false);
 		f.setTitle(bundle.getString("JFrame_title"));
-		f.setIconImage(new ImageIcon(Main.class.getResource("/images/appImage.png")).getImage());
+		f.setIconImage(new ImageIcon(Main.class.getResource("/images/appImage.png")).getImage().getScaledInstance(-1, -1, Image.SCALE_SMOOTH));
 		
-		f.setVisible(true);
+		
+		
+		/*
+		 * Darbinieka ielogošanās lapa
+		 */
+		
+		JPanel plogInMenu = new JPanel();
+		JTextField tidInput = new JTextField();
+		
+		
+		plogInMenu.setLayout(new GridBagLayout());
+		
+		
 		
 		/*
 		 * Close window
 		 */
-		
 		
 		f.addWindowListener(new WindowAdapter() {
 		    @Override
@@ -124,6 +160,7 @@ public class Main {
 		        fClose.setVisible(true);
 		    }
 		});
-
+		
+		f.setVisible(true);
 	}
 }
