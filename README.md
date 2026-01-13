@@ -7,6 +7,7 @@ izies pilot programmu dažās tās vietās.
 
 - Pamati priekš vairāku valodas atbalsta
 - Pirms aizver programmu pārbauda vai operētājs tiešām to vēlas darīt
+- Ja ekrāna izmērs ir 1920 x 1080 tad programma tiks atvērta pilnekrāna režīmā citādāk lodziņš 1920 x 1080 izmēros
 
 ## Programmas plānotās daļas
 
