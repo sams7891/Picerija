@@ -2,18 +2,23 @@ package frame;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -23,6 +28,8 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
+
+import files.Files;
 
 public class Main {
 
@@ -36,13 +43,13 @@ public class Main {
 		
 		JFrame f = new JFrame();
 		JFrame fClose = new JFrame();
+		
 		JPanel pBackground = new JPanel() {
-			
 			/**
 			 * 
 			 */
 			private static final long serialVersionUID = -1969924032365564895L;
-			Image background = new ImageIcon(getClass().getResource("/images/startUp.png")).getImage();
+			Image background = new ImageIcon(getClass().getResource("/images/logInBackground.png")).getImage();
 
             @Override
             protected void paintComponent(Graphics g) {
@@ -73,9 +80,10 @@ public class Main {
 		    e.printStackTrace();
 		}
 		
-		if(screenSize.width == 1920 && screenSize.height == 1080)
+		if(screenSize.width == 1920 && screenSize.height == 1080) {
 			f.setExtendedState(JFrame.MAXIMIZED_BOTH);
-		else
+			f.setUndecorated(true);
+		}else
 			f.setSize(1920, 1080);
 		
 		f.setContentPane(pBackground);
@@ -93,12 +101,67 @@ public class Main {
 		 */
 		
 		JPanel plogInMenu = new JPanel();
+		JLabel llogInText = new JLabel(bundle.getString("llogInText"));
+		JLabel llogInTextIncorrect = new JLabel(bundle.getString("llogInTextIncorrect"));
 		JTextField tidInput = new JTextField();
 		
 		
-		plogInMenu.setLayout(new GridBagLayout());
+		f.setLayout(new BorderLayout());
+		
+		plogInMenu.setLayout(new BoxLayout(plogInMenu, BoxLayout.Y_AXIS));
+		plogInMenu.setOpaque(false);
+		
+		llogInText.setOpaque(false);
+		llogInText.setFont(new Font("Arial", Font.BOLD, 50));
+		llogInText.setForeground(new Color(240, 240, 240));
+		llogInText.setAlignmentX(Component.LEFT_ALIGNMENT);
+		
+		plogInMenu.setBorder(BorderFactory.createEmptyBorder(310, 100, 0, 0));
+		plogInMenu.add(llogInText, BorderLayout.WEST);
+		plogInMenu.add(Box.createVerticalStrut(50));
+		
+		llogInTextIncorrect.setOpaque(false);
+		llogInTextIncorrect.setFont(new Font("Arial", Font.BOLD, 18));
+		llogInTextIncorrect.setForeground(new Color(0, 0, 0));
+		llogInTextIncorrect.setAlignmentX(Component.LEFT_ALIGNMENT);
 		
 		
+		tidInput.setAlignmentX(Component.LEFT_ALIGNMENT);
+		tidInput.setMaximumSize(new Dimension(bundle.getString("tidInput").length() * 15, 40));
+		tidInput.setFont(new Font("Arial", Font.BOLD, 18));
+		tidInput.setForeground(new Color(40, 40, 40));
+		
+		tidInput.addActionListener(e ->{
+			String idIevade = tidInput.getText();
+
+			if(!Files.checkEmployee(idIevade)) {
+				tidInput.setText("");
+				llogInTextIncorrect.setForeground(new Color(250, 30, 30));
+
+			}else {
+				llogInTextIncorrect.setForeground(new Color(0, 0, 0));
+
+			}
+			
+		});
+		
+		tidInput.addKeyListener(new KeyAdapter() {
+		    @Override
+		    public void keyPressed(KeyEvent e) {
+		        if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
+		            if (tidInput.getText().isEmpty()) {
+		                e.consume();
+		            }
+		        }
+		    }
+		});
+
+		
+		// pievienot registra failam
+		
+		plogInMenu.add(llogInTextIncorrect);
+		plogInMenu.add(tidInput);
+		f.add(plogInMenu);
 		
 		/*
 		 * Close window
@@ -143,17 +206,18 @@ public class Main {
 		        
 		        JButton bClose = new JButton(bundle.getString("fClose_exit"));
 		        bClose.setPreferredSize(new Dimension(100, 30));
-		        bClose.addActionListener(_ -> System.exit(0));
+		        bClose.addActionListener(ev -> System.exit(0));
 
 		        JButton bCancel = new JButton(bundle.getString("fClose_cancel"));
 		        bCancel.setPreferredSize(new Dimension(100, 30));
-		        bCancel.addActionListener(_ -> fClose.dispose());
+		        bCancel.addActionListener(ev -> fClose.dispose());
 
 		        pButton.add(bClose);
 		        pButton.add(bCancel);
 
 		        fClose.setContentPane(pBackground);
 		        fClose.add(pButton, BorderLayout.SOUTH);
+		        
 		        if (fClose.isVisible()) 
 		        	Toolkit.getDefaultToolkit().beep();
 		        
