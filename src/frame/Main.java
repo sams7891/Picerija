@@ -94,6 +94,7 @@ public class Main {
 		
 		JPanel plogInMenu = new JPanel();
 		JLabel llogInText = new JLabel(bundle.getString("llogInText"));
+		JLabel lloginInfoText = new JLabel(bundle.getString("lloginInfoText"));
 		JLabel llogInTextIncorrect = new JLabel(bundle.getString("llogInTextIncorrect"));
 		JTextField tidInput = new JTextField();
 		
@@ -110,6 +111,13 @@ public class Main {
 		
 		plogInMenu.setBorder(BorderFactory.createEmptyBorder(310, 100, 0, 0));
 		plogInMenu.add(llogInText, BorderLayout.WEST);
+		
+		lloginInfoText.setOpaque(false);
+		lloginInfoText.setFont(new Font("Arial", Font.PLAIN, 18));
+		lloginInfoText.setForeground(new Color(240, 240, 240));
+		lloginInfoText.setAlignmentX(Component.LEFT_ALIGNMENT);
+		plogInMenu.add(lloginInfoText);
+
 		plogInMenu.add(Box.createVerticalStrut(50));
 		
 		llogInTextIncorrect.setOpaque(false);
@@ -151,7 +159,7 @@ public class Main {
 
 		
 		// pievienot registra failam
-		
+
 		plogInMenu.add(llogInTextIncorrect);
 		plogInMenu.add(tidInput);
 		f.add(plogInMenu);

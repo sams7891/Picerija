@@ -1,6 +1,7 @@
 package frame;
 
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
@@ -9,6 +10,7 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
@@ -52,6 +54,16 @@ public class Panel {
 			f.setResizable(false);
 			f.setTitle(bundle.getString("JFrame_title"));
 			f.setIconImage(new ImageIcon(Main.class.getResource("/images/appImage.png")).getImage().getScaledInstance(-1, -1, Image.SCALE_SMOOTH));
+			
+			/*
+			 * top bar
+			 */
+			
+
+			
+			/*
+			 * Window close
+			 */
 			
 			Global.closeWindow(f);
 			
