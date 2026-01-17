@@ -131,6 +131,17 @@ public class Main {
 		tidInput.setFont(new Font("Arial", Font.BOLD, 18));
 		tidInput.setForeground(new Color(40, 40, 40));
 		
+		/*
+		 * Vēlāk šito noņemt
+		 */
+		
+		tidInput.setText("1000");
+		
+		/*
+		 * 
+		 * 
+		 */
+		
 		tidInput.addActionListener(e ->{
 			String idIevade = tidInput.getText();
 
