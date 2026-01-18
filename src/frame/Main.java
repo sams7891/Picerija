@@ -26,7 +26,8 @@ import global.Global;
 
 public class Main {
 
-
+	public static Locale locale = Locale.of("lv");
+	public static ResourceBundle bundle = ResourceBundle.getBundle("text.text", locale);
 	
 	public static void main(String[] args) {
 		
@@ -51,8 +52,7 @@ public class Main {
         };
 		
 		//Vēlāk nomainīt uz maināmu mainīgu
-		Locale locale = Locale.of("lv");
-		ResourceBundle bundle = ResourceBundle.getBundle("text.text", locale);
+		
 		
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		

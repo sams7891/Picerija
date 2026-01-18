@@ -3,12 +3,17 @@ package frame;
 import java.awt.AlphaComposite;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Locale;
@@ -19,7 +24,9 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.basic.BasicButtonUI;
@@ -28,74 +35,180 @@ import global.Global;
 
 public class Panel {
 	
-	static void TopButton(JButton b) {
-		Locale locale = Locale.of("lv");
-		ResourceBundle bundle = ResourceBundle.getBundle("text.text", locale);
-		
-		b.setMaximumSize(new Dimension(bundle.getString("register").length() * 15, 40));
-		b.setFont(new Font("Arial", Font.PLAIN, 30));
+	static Locale locale = Main.locale;
+	static ResourceBundle bundle = Main.bundle;
+	
+	static Component OptionSwitch(String option) {
+		JPanel panel = new JPanel() {
+		    /**
+			 * 
+			 */
+			private static final long serialVersionUID = -918757145678230349L;
+
+			@Override
+		    protected void paintComponent(Graphics g) {
+		        super.paintComponent(g);
+
+		        Graphics2D g2 = (Graphics2D) g.create();
+		        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+		                            RenderingHints.VALUE_ANTIALIAS_ON);
+
+		        g2.setColor(getBackground());
+		        g2.fillRoundRect(0, 0, getWidth(), getHeight(), 25, 25);
+
+		        g2.dispose();
+		    }
+		};
+
+		panel.setOpaque(false);
+		panel.setBackground(new Color(240, 240, 240));
+
+	    
+	    
+	    switch (option) {
+	        case "register":
+	            panel.add(new JLabel("Register"));
+	            break;
+
+	        case "lookUp":
+	            panel.add(new JLabel("Look Up"));
+	            break;
+
+	        case "settings":
+	        	
+	        	JPanel pLanguage = new JPanel(new FlowLayout());
+	        	JLabel lLanguage = new JLabel(bundle.getString("lLanguage"));
+	        	String[] languages = {"Latviešu", "English"};
+	        	
+	        	JComboBox<String> cbLanguages = new JComboBox<String>(languages);
+	        	
+	        	
+	        	
+	        	lLanguage.setFont(new Font("Arial", Font.PLAIN, 18));
+	        	pLanguage.add(lLanguage);
+	        	pLanguage.add(cbLanguages);
+
+	            panel.setLayout(new BorderLayout());
+	            panel.setBorder(BorderFactory.createEmptyBorder(50, 50, 20, 20));
+	            panel.add(pLanguage, BorderLayout.NORTH);
+	            break;
+	    }
+
+	    return panel;
+	}
+
+	
+	static void TopButton(JButton b) {		
+		b.setMaximumSize(new Dimension(b.getText().length() * 15, 40));
+		b.setFont(new Font("Arial", Font.BOLD, 30));
 		b.setContentAreaFilled(false);
 		b.setBorderPainted(false);
-		b.setBorder(BorderFactory.createLineBorder(new Color(145, 145, 145), 2, true));
 		b.setUI(new BasicButtonUI());
-		
+		b.setForeground(new Color(10, 10, 10));
+		b.setBorder(BorderFactory.createCompoundBorder(
+			    BorderFactory.createLineBorder(new Color(210, 210, 210), 2, true),
+			    BorderFactory.createEmptyBorder(10, 10, 10, 10)
+			));
+		b.setRolloverEnabled(true);
+
+
 		
 		b.addMouseListener(new MouseListener() {
 		
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				b.setBackground(new Color(170, 170, 170));
+				if(!b.isEnabled()) return;
+
+				
+				b.setBackground(new Color(200, 200, 200));
 
 			}
 
 			@Override
 			public void mousePressed(MouseEvent e) {
-				b.setBackground(new Color(150, 150, 150));
+				if(!b.isEnabled()) return;
+
+				b.setBackground(new Color(190, 190, 190));
 
 				
 			}
 
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				b.setBackground(new Color(150, 150, 150));
+				if(!b.isEnabled()) return;
+
+				b.setBackground(new Color(255, 170, 170));
 
 				
 			}
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
+				if(!b.isEnabled()) return;
+				
 				b.setContentAreaFilled(true);
 				b.setBorderPainted(true);
 
-				b.setBackground(new Color(150, 150, 150));
+				b.setBackground(new Color(220, 220, 220));
+				
+				
 				
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				b.setContentAreaFilled(false);
+				if(!b.isEnabled()) return;
+
+				b.setBackground(new Color(240, 240, 240));
+
 				b.setBorderPainted(false);
+				
 				
 			}
 			
 		});
+		
+		b.addPropertyChangeListener("enabled", evt -> {
+		    if (!b.isEnabled()) {
+
+		        b.setBorderPainted(false);
+		        b.setContentAreaFilled(false);
+		    }
+		});
+
 	}
 	
 	public static void panel() {
 		
 		JFrame f = new JFrame();
-		Locale locale = Locale.of("lv");
-		ResourceBundle bundle = ResourceBundle.getBundle("text.text", locale);
 		
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		
+		JPanel trans = new JPanel(new BorderLayout()) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 8638768058679045493L;
+
+			@Override
+			protected void paintComponent(Graphics g) {
+				 super.paintComponent(g);
+	                Graphics2D g2d = (Graphics2D) g.create();
+	                // Set alpha here (0.0f = fully transparent, 1.0f = fully opaque)
+	                g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.7f));
+	                g2d.setColor(Color.gray); // panel color
+	                g2d.fillRect(0, 0, getWidth(), getHeight());
+	                g2d.dispose();
+			}
+		};
 		
 		JPanel pBackground = new JPanel() {
 			/**
 			 * 
 			 */
 			private static final long serialVersionUID = -1969924032365564895L;
-			Image background = new ImageIcon(getClass().getResource("/images/LogInBackground.png")).getImage();
+			Image background = new ImageIcon(getClass().getResource("/images/test2.jpg")).getImage().getScaledInstance(1920, 1080, Image.SCALE_SMOOTH);
 
             @Override
             protected void paintComponent(Graphics g) {
@@ -104,7 +217,13 @@ public class Panel {
             }
         	};
         
-        
+        	JPanel contentWrapper = new JPanel(new BorderLayout());
+        	contentWrapper.setBorder(new EmptyBorder(40, 40, 40, 40));
+        	contentWrapper.setOpaque(false);
+
+        	trans.add(contentWrapper, BorderLayout.CENTER);
+
+        	
 			if(screenSize.width == 1920 && screenSize.height == 1080) {
 				f.setExtendedState(JFrame.MAXIMIZED_BOTH);
 				f.setUndecorated(true);
@@ -119,11 +238,14 @@ public class Panel {
 			f.setTitle(bundle.getString("JFrame_title"));
 			f.setIconImage(new ImageIcon(Main.class.getResource("/images/appImage.png")).getImage().getScaledInstance(-1, -1, Image.SCALE_SMOOTH));
 			
+			
+			
 			/*
 			 * top bar
 			 */
 			
 			JPanel pOptions = new JPanel();
+			
 			JButton bRegister = new JButton(bundle.getString("register"));
 			JButton bLookUp = new JButton(bundle.getString("lookup_orders"));
 			JButton bSettings = new JButton(bundle.getString("settings"));
@@ -135,8 +257,8 @@ public class Panel {
 			TopButton(bSettings);
 			
 	        pOptions.setBorder(new EmptyBorder(20, 0, 20, 0));
-
-			
+	        pOptions.setBackground(new Color(240, 240, 240));
+				
 			pOptions.add(Box.createHorizontalStrut(50));
 			pOptions.add(bRegister);
 			pOptions.add(Box.createHorizontalStrut(50));
@@ -145,6 +267,56 @@ public class Panel {
 			pOptions.add(bSettings);
 			pOptions.add(Box.createHorizontalStrut(50));
 			
+			bRegister.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					bRegister.setEnabled(false);
+					bLookUp.setEnabled(true);
+					bSettings.setEnabled(true);
+					contentWrapper.removeAll();
+					contentWrapper.add(OptionSwitch("register"), BorderLayout.CENTER);
+					contentWrapper.revalidate();
+					contentWrapper.repaint();
+
+
+				}
+				
+			});
+			
+			bLookUp.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					bRegister.setEnabled(true);
+					bLookUp.setEnabled(false);
+					bSettings.setEnabled(true);
+					contentWrapper.removeAll();
+					contentWrapper.add(OptionSwitch("lookUp"), BorderLayout.CENTER);
+					contentWrapper.revalidate();
+					contentWrapper.repaint();
+
+
+				}
+				
+			});
+			
+			bSettings.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					bRegister.setEnabled(true);
+					bLookUp.setEnabled(true);
+					bSettings.setEnabled(false);
+					contentWrapper.removeAll();
+					contentWrapper.add(OptionSwitch("settings"), BorderLayout.CENTER);
+					contentWrapper.revalidate();
+					contentWrapper.repaint();
+					contentWrapper.setBorder(new EmptyBorder(40, 40, 40, 600));
+
+				}
+				
+			});
 			
 			f.add(pOptions, BorderLayout.NORTH);
 			
@@ -154,27 +326,13 @@ public class Panel {
 			
 			Global.closeWindow(f);
 			
-			JPanel pRegister = new JPanel() {
-				/**
-				 * 
-				 */
-				private static final long serialVersionUID = 8638768058679045493L;
-
-				@Override
-				protected void paintComponent(Graphics g) {
-					 super.paintComponent(g);
-		                Graphics2D g2d = (Graphics2D) g.create();
-		                // Set alpha here (0.0f = fully transparent, 1.0f = fully opaque)
-		                g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
-		                g2d.setColor(Color.white); // panel color
-		                g2d.fillRect(0, 0, getWidth(), getHeight());
-		                g2d.dispose();
-				}
-			};
-			pRegister.setOpaque(false);
+			trans.setOpaque(false);
 			
-			pRegister.add(Box.createHorizontalStrut(50));
-			f.add(pRegister, BorderLayout.CENTER);
+			
+
+
+			
+			f.add(trans, BorderLayout.CENTER);
 			f.setVisible(true);
 	}
 }
