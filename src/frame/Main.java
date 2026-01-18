@@ -66,7 +66,6 @@ public class Main {
             }
         };
 
-        // Look and Feel
         try {
             for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -130,7 +129,7 @@ public class Main {
         tidInput.setForeground(new Color(40, 40, 40));
         tidInput.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        // TEMP TEST VALUE
+        // TEMP VALUE
         tidInput.setText("1000");
 
         tidInput.addActionListener(e -> {

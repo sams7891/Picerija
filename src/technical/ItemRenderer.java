@@ -1,41 +1,45 @@
 package technical;
 
+import java.awt.Component;
 import javax.swing.*;
-
 import menuItems.Item;
+import java.awt.BorderLayout;
 
-import java.awt.*;
-
-public class ItemRenderer extends JLabel implements ListCellRenderer<Item> {
+public class ItemRenderer extends JPanel implements ListCellRenderer<Item> {
 
     /**
 	 * 
 	 */
-	private static final long serialVersionUID = -7275975458175060125L;
+	private static final long serialVersionUID = -1053774049451414466L;
+	private JLabel iconLabel = new JLabel();
+    private JLabel textLabel = new JLabel();
 
-	public ItemRenderer() {
-        setOpaque(true); // important for background highlight
+    public ItemRenderer() {
+        setLayout(new BorderLayout(5, 0)); // horizontal gap between icon and text
+        add(iconLabel, BorderLayout.WEST);
+        add(textLabel, BorderLayout.CENTER);
+        setOpaque(true);
     }
 
     @Override
-    public Component getListCellRendererComponent(
-            JList<? extends Item> list,
-            Item value,
-            int index,
-            boolean isSelected,
-            boolean cellHasFocus) {
+    public Component getListCellRendererComponent(JList<? extends Item> list, Item value, int index,
+                                                  boolean isSelected, boolean cellHasFocus) {
 
         if (value != null) {
-            setText(value.getName() + "€" + value.getPrice());
-            setIcon(value.getIcon());
+            iconLabel.setIcon(value.getIcon());
+
+            // HTML for multi-line text
+            textLabel.setText("<html>" + value.getName() + "<br>â‚¬" + String.format("%.2f", value.getPrice()) + "</html>");
+
+
         }
 
         if (isSelected) {
             setBackground(list.getSelectionBackground());
-            setForeground(list.getSelectionForeground());
+            textLabel.setForeground(list.getSelectionForeground());
         } else {
             setBackground(list.getBackground());
-            setForeground(list.getForeground());
+            textLabel.setForeground(list.getForeground());
         }
 
         return this;

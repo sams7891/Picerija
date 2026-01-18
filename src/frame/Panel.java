@@ -16,7 +16,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import javax.swing.BorderFactory;
@@ -29,17 +30,56 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
 import javax.swing.plaf.basic.BasicButtonUI;
 
 import files.FileUser;
 import menuItems.Item;
+import menuItems.PizzaSize;
 import technical.Global;
+import technical.ItemCheckBox;
 import technical.ItemRenderer;
 
 public class Panel {
 	
 	static ResourceBundle bundle;
 	static JFrame f;
+	
+	static double calculateTotal(
+	        JComboBox<PizzaSize> cbSize,
+	        JComboBox<Item> cbCrust,
+	        JComboBox<Item> cbSauce,
+	        List<ItemCheckBox> toppingBoxes
+	) {
+	    double total = 5.0;
+
+	    Item crust = (Item) cbCrust.getSelectedItem();
+	    Item sauce = (Item) cbSauce.getSelectedItem();
+	    PizzaSize size = (PizzaSize) cbSize.getSelectedItem();
+
+	    if (crust != null) total += crust.getPrice();
+	    if (sauce != null) total += sauce.getPrice();
+
+	    for (ItemCheckBox cb : toppingBoxes) {
+	        if (cb.isSelected()) {
+	            total += cb.getItem().getPrice();
+	        }
+	    }
+
+	    if (size != null) {
+	        total *= size.getMultiplier();
+	    }
+
+	    return total;
+	}
+
+
+	
+    static ImageIcon loadIcon(String path, int width, int height) {
+        ImageIcon icon = new ImageIcon(Panel.class.getResource(path));
+        Image img = icon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
+        return new ImageIcon(img);
+    }
 	
 	@SuppressWarnings("unused")
 	static Component OptionSwitch(String option) {
@@ -70,27 +110,206 @@ public class Panel {
 	    
 	    
 	    switch (option) {
-	        case "register":
-	            JPanel pRegister1 = new JPanel();
-	            pRegister1.setLayout(new BoxLayout(pRegister1, BoxLayout.Y_AXIS));
-	            pRegister1.setPreferredSize(new Dimension(200, 50));
-	            
-	            Item[] crusts = {
-	            		new Item(bundle.getString("iCrust"), 1.00, new ImageIcon(Panel.class.getResource("/images/items/pizzaDefault.jpg"))),
+	    case "register":
+	        JPanel pRegister1 = new JPanel();
+	        pRegister1.setLayout(new BoxLayout(pRegister1, BoxLayout.Y_AXIS));
+	        pRegister1.setOpaque(false);
+	        pRegister1.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
+	        
+	        /*
+	         * Size
+	         */
+	        
+	        PizzaSize[] sizes = {
+	        	    new PizzaSize(10, 1.0),
+	        	    new PizzaSize(14, 1.3),
+	        	    new PizzaSize(18, 1.6),
+	        	    new PizzaSize(22, 1.9),
+	        	    new PizzaSize(26, 2.2)
+	        	};
 
-	            		new Item(bundle.getString("iCrust"), 2.00, new ImageIcon(Panel.class.getResource("/images/items/pizzaDefault.jpg")))
+	        	JLabel lSize = new JLabel(bundle.getString("lSize"));
+	        	lSize.setFont(new Font(Global.lanFont, Font.PLAIN, 20));
+	        	lSize.setAlignmentX(Component.LEFT_ALIGNMENT);
+	        	pRegister1.add(lSize);
+
+	        	JComboBox<PizzaSize> cbSize = new JComboBox<>(sizes);
+	        	cbSize.setFont(new Font(Global.lanFont, Font.PLAIN, 15));
+	        	cbSize.setAlignmentX(Component.LEFT_ALIGNMENT);
+	        	cbSize.setPreferredSize(new Dimension(240, cbSize.getPreferredSize().height));
+	        	cbSize.setMaximumSize(new Dimension(240, cbSize.getPreferredSize().height));
 
 
-	            };
-	            
-	            JComboBox<Item> cbCrust = new JComboBox<>(crusts);
-	            cbCrust.setRenderer(new ItemRenderer());
-	            
-	            pRegister1.add(cbCrust);
-	            
-	            panel.add(pRegister1);
-	        	
-	            break;
+	        	pRegister1.add(cbSize);
+	        	pRegister1.add(Box.createVerticalStrut(20));
+
+	        
+	        /*
+	         * Crust
+	         */
+	        
+	        JLabel lPizza = new JLabel(bundle.getString("iPizza"));
+	        lPizza.setFont(new Font(Global.lanFont, Font.BOLD, 40));
+	        lPizza.setAlignmentX(Component.LEFT_ALIGNMENT);
+	        pRegister1.add(lPizza);
+	        pRegister1.add(Box.createVerticalStrut(20));
+	        
+	        JLabel lCrust = new JLabel(bundle.getString("lCrust"));
+	        lCrust.setFont(new Font(Global.lanFont, Font.PLAIN, 20));
+	        lCrust.setAlignmentX(Component.LEFT_ALIGNMENT);
+	        pRegister1.add(lCrust);
+	        
+	        Item[] crusts = {
+	            new Item(bundle.getString("iCrustThin"), 1.00, loadIcon("/images/items/crustThin.png", 80, 80)),
+	            new Item(bundle.getString("iCrustFilled"), 3.00, loadIcon("/images/items/crustFilled.png", 80, 80)),
+	            new Item(bundle.getString("iCrustThick"), 1.50, loadIcon("/images/items/crustThick.jpg", 80, 80))
+	        };
+
+	        JComboBox<Item> cbCrust = new JComboBox<>(crusts);
+	        cbCrust.setRenderer(new ItemRenderer());
+	        cbCrust.setFont(new Font(Global.lanFont, Font.PLAIN, 15));
+	        cbCrust.setAlignmentX(Component.LEFT_ALIGNMENT);
+	        cbCrust.setMaximumSize(cbCrust.getPreferredSize());
+	        pRegister1.add(cbCrust);
+	        pRegister1.add(Box.createVerticalStrut(20));
+	        
+	        /*
+	         * Sauce
+	         */
+	        
+	        JLabel lSauce = new JLabel(bundle.getString("lSauce"));
+	        lSauce.setFont(new Font(Global.lanFont, Font.PLAIN, 20));
+	        lSauce.setAlignmentX(Component.LEFT_ALIGNMENT);
+	        pRegister1.add(lSauce);
+	        
+	        
+	        Item[] sauce = {
+	            new Item(bundle.getString("iTomataSauce"), 1.50, loadIcon("/images/items/tomatoSauce.jpg", 80, 80)),
+	            new Item(bundle.getString("iMayo"), 1.00, loadIcon("/images/items/mayo.jpg", 80, 80)),
+	            new Item(bundle.getString("ibbqSauce"), 1.50, loadIcon("/images/items/bbqSauce.jpg", 80, 80))
+	        };
+
+	        JComboBox<Item> cbSauce = new JComboBox<>(sauce);
+	        cbSauce.setRenderer(new ItemRenderer());
+	        cbSauce.setFont(new Font(Global.lanFont, Font.PLAIN, 15));
+	        cbSauce.setAlignmentX(Component.LEFT_ALIGNMENT);
+	        cbSauce.setMaximumSize(cbSauce.getPreferredSize());
+	        pRegister1.add(cbSauce);
+	        
+	        /*
+	         * Toppings
+	         */
+	        
+	        JPanel pToppings = new JPanel();
+	        pToppings.setLayout(new BoxLayout(pToppings, BoxLayout.Y_AXIS));
+	        pToppings.setOpaque(false);
+	        
+	        
+	        TitledBorder tbBorderToppings = BorderFactory.createTitledBorder(bundle.getString("tToppings"));
+	        tbBorderToppings.setTitleFont(new Font(Global.lanFont, Font.PLAIN, 20));
+	        pToppings.setBorder(tbBorderToppings);
+
+	        Item[] toppings = {
+	        	    new Item(bundle.getString("tCheese"), 1.0, null),
+	        	    new Item(bundle.getString("tPepperoni"), 1.50, null),
+	        	    new Item(bundle.getString("tMushrooms"), 1.70, null),
+	        	    new Item(bundle.getString("tOnions"), 1.00, null),
+	        	    new Item(bundle.getString("tOlives"), 0.65, null)
+	        	};
+
+
+	        List<ItemCheckBox> toppingBoxes = new ArrayList<>();
+
+	        for (Item topping : toppings) {
+	            ItemCheckBox cb = new ItemCheckBox(topping);
+	            cb.setFont(new Font(Global.lanFont, Font.PLAIN, 15));
+	            cb.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+	            pToppings.add(cb);
+	            pToppings.add(Box.createVerticalStrut(10));
+
+	            toppingBoxes.add(cb);
+	        }
+
+	        
+	        
+	        pToppings.add(Box.createVerticalGlue());
+
+	        pRegister1.add(Box.createVerticalStrut(20));
+	        pToppings.setMaximumSize(pToppings.getPreferredSize());
+	        pRegister1.add(pToppings);
+
+	        pRegister1.add(Box.createVerticalGlue());
+	        
+	        /*
+	         * Price
+	         */
+	        
+	        JPanel pSummary = new JPanel();
+	        pSummary.setLayout(new BoxLayout(pSummary, BoxLayout.Y_AXIS));
+	        pSummary.setOpaque(false);
+	        pSummary.setBorder(BorderFactory.createCompoundBorder(
+	                BorderFactory.createLineBorder(new Color(200, 200, 200), 2, true),
+	                new EmptyBorder(20, 20, 20, 20)
+	        ));
+	        pSummary.setPreferredSize(new Dimension(300, 200));
+
+	        // Price label
+	        JLabel lTotalTitle = new JLabel(bundle.getString("lTotalPrice"));
+	        lTotalTitle.setFont(new Font(Global.lanFont, Font.PLAIN, 20));
+	        lTotalTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+	        JLabel lTotalPrice = new JLabel("€5.00");
+	        lTotalPrice.setFont(new Font(Global.lanFont, Font.BOLD, 32));
+	        lTotalPrice.setAlignmentX(Component.CENTER_ALIGNMENT);
+	        ActionListener priceUpdater = e -> {
+	            double total = calculateTotal(cbSize, cbCrust, cbSauce, toppingBoxes);
+	            lTotalPrice.setText("€" + String.format("%.2f", total));
+	        };
+
+	        cbSize.addActionListener(priceUpdater);
+	        cbCrust.addActionListener(priceUpdater);
+	        cbSauce.addActionListener(priceUpdater);
+
+	        for (ItemCheckBox cb : toppingBoxes) {
+	            cb.addActionListener(priceUpdater);
+	        }
+
+	        priceUpdater.actionPerformed(null);
+
+
+
+	        // Add button
+	        JButton bAddToCart = new JButton(bundle.getString("bAddToCart"));
+	        bAddToCart.setFont(new Font(Global.lanFont, Font.BOLD, 20));
+	        bAddToCart.setAlignmentX(Component.CENTER_ALIGNMENT);
+	        bAddToCart.setMaximumSize(new Dimension(220, 50));
+
+	        // Layout
+	        pSummary.add(lTotalTitle);
+	        pSummary.add(Box.createVerticalStrut(10));
+	        pSummary.add(lTotalPrice);
+	        pSummary.add(Box.createVerticalStrut(30));
+	        pSummary.add(bAddToCart);
+	        
+	        /*
+	         * Wrapper
+	         */
+	        JPanel wrapper = new JPanel();
+	        wrapper.setLayout(new BoxLayout(wrapper, BoxLayout.X_AXIS));
+	        wrapper.setOpaque(false);
+
+	        wrapper.add(pRegister1);
+	        wrapper.add(Box.createHorizontalStrut(50));
+	        wrapper.add(pSummary);
+	        wrapper.add(Box.createHorizontalGlue());
+
+
+	        panel.setLayout(new BorderLayout());
+	        panel.add(wrapper, BorderLayout.CENTER);
+	        
+	        break;
+
 
 	        case "lookUp":
 	            
@@ -157,29 +376,22 @@ public class Panel {
 	            rButton.setFont(new Font(Global.lanFont, Font.PLAIN, 18));
 	            
 	            rButton.addActionListener(e -> {
-	                // STEP A: Get the current selection from the UI
 	                String selected = (String) cbLanguages.getSelectedItem();
 	                String langCode = selected.equals("Latviešu") ? "lv" : "en";
 	                
-	                // STEP B: Save it to the file so it persists
 	                FileUser.settingsWriter("lan", langCode);
 	                
-	                // STEP C: Reload the bundle in Global.java
-	                // This is the most important part! It updates Global.bundle in memory.
 	                Global.settingsUpdater();
 	                
-	                // STEP D: The "Hard Reset"
-	                f.dispose();         // Close the current window
-	                Panel.panel();       // Launch a brand new window using the updated bundle
+	                f.dispose();
+	                Panel.panel();
 	            });
 
-	            // Layout
 	            panel.setLayout(new BorderLayout());
 	            panel.setBorder(BorderFactory.createEmptyBorder(50, 50, 20, 20));
 	            
 	            panel.add(pLanguage, BorderLayout.NORTH);
 	            
-	            // Putting the button in a panel to control its size
 	            JPanel pRestart = new JPanel(new FlowLayout(FlowLayout.LEFT));
 	            pRestart.setOpaque(false);
 	            pRestart.add(rButton);
