@@ -23,7 +23,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.JOptionPane;
 import files.FileUser;
-import global.Global;
+import technical.Global;
 
 public class Main {
 

@@ -1,4 +1,4 @@
-package global;
+package technical;
 
 import java.awt.BorderLayout;
 import java.awt.Color;

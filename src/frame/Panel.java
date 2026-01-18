@@ -16,6 +16,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.IOException;
 import java.util.ResourceBundle;
 
 import javax.swing.BorderFactory;
@@ -31,7 +32,9 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.basic.BasicButtonUI;
 
 import files.FileUser;
-import global.Global;
+import menuItems.Item;
+import technical.Global;
+import technical.ItemRenderer;
 
 public class Panel {
 	
@@ -68,11 +71,29 @@ public class Panel {
 	    
 	    switch (option) {
 	        case "register":
-	            panel.add(new JLabel("Register"));
+	            JPanel pRegister1 = new JPanel();
+	            pRegister1.setLayout(new BoxLayout(pRegister1, BoxLayout.Y_AXIS));
+	            pRegister1.setPreferredSize(new Dimension(200, 50));
+	            
+	            Item[] crusts = {
+	            		new Item(bundle.getString("iCrust"), 1.00, new ImageIcon(Panel.class.getResource("/images/items/pizzaDefault.jpg"))),
+
+	            		new Item(bundle.getString("iCrust"), 2.00, new ImageIcon(Panel.class.getResource("/images/items/pizzaDefault.jpg")))
+
+
+	            };
+	            
+	            JComboBox<Item> cbCrust = new JComboBox<>(crusts);
+	            cbCrust.setRenderer(new ItemRenderer());
+	            
+	            pRegister1.add(cbCrust);
+	            
+	            panel.add(pRegister1);
+	        	
 	            break;
 
 	        case "lookUp":
-	            panel.add(new JLabel("Look Up"));
+	            
 	            break;
 
 	        case "settings":
@@ -350,6 +371,7 @@ public class Panel {
 					contentWrapper.add(OptionSwitch("register"), BorderLayout.CENTER);
 					contentWrapper.revalidate();
 					contentWrapper.repaint();
+					contentWrapper.setBorder(new EmptyBorder(40, 40, 40, 40));
 
 
 				}
@@ -367,6 +389,7 @@ public class Panel {
 					contentWrapper.add(OptionSwitch("lookUp"), BorderLayout.CENTER);
 					contentWrapper.revalidate();
 					contentWrapper.repaint();
+					contentWrapper.setBorder(new EmptyBorder(40, 40, 40, 40));
 
 
 				}
@@ -384,7 +407,7 @@ public class Panel {
 					contentWrapper.add(OptionSwitch("settings"), BorderLayout.CENTER);
 					contentWrapper.revalidate();
 					contentWrapper.repaint();
-					contentWrapper.setBorder(new EmptyBorder(40, 40, 40, 600));
+					contentWrapper.setBorder(new EmptyBorder(40, 40, 40, 1300));
 
 				}
 				
