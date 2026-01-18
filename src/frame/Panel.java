@@ -16,7 +16,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.Locale;
 import java.util.ResourceBundle;
 
 import javax.swing.BorderFactory;
@@ -31,13 +30,15 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.basic.BasicButtonUI;
 
+import files.FileUser;
 import global.Global;
 
 public class Panel {
 	
-	static Locale locale = Main.locale;
-	static ResourceBundle bundle = Main.bundle;
+	static ResourceBundle bundle;
+	static JFrame f;
 	
+	@SuppressWarnings("unused")
 	static Component OptionSwitch(String option) {
 		JPanel panel = new JPanel() {
 		    /**
@@ -75,22 +76,94 @@ public class Panel {
 	            break;
 
 	        case "settings":
-	        	
-	        	JPanel pLanguage = new JPanel(new FlowLayout());
+	        	/*
+	        	 * language change
+	        	 */
+	        	JPanel pLanguage = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
 	        	JLabel lLanguage = new JLabel(bundle.getString("lLanguage"));
 	        	String[] languages = {"Latviešu", "English"};
 	        	
 	        	JComboBox<String> cbLanguages = new JComboBox<String>(languages);
 	        	
+	        	String language = Global.locale.getLanguage();
+	        	
+	        	cbLanguages.setFont(new Font(Global.lanFont, Font.PLAIN, 18));
+	        	cbLanguages.setOpaque(false);
+	        	switch(language) {
+	        	case "lv":
+	        		cbLanguages.setSelectedItem("Latviešu");
+	        		break;
+	        		
+	        	case "en":
+	        		cbLanguages.setSelectedItem("English");
+	        		break;
+	        	}
+	        	
+	        	cbLanguages.addActionListener(e -> {
+	        	    String selectedLanguage = (String) cbLanguages.getSelectedItem();
+	        	    
+	        	    switch(selectedLanguage) {
+		        	case "Latviešu":
+		        		selectedLanguage = "lv";
+		        		break;
+		        		
+		        	case "English":
+		        		selectedLanguage = "en";
+		        		break;
+		        	}
+	        	    
+	        	    FileUser.settingsWriter("lan", selectedLanguage);
+	        	    
+	        	    
+	        	});
 	        	
 	        	
-	        	lLanguage.setFont(new Font("Arial", Font.PLAIN, 18));
+	        	lLanguage.setFont(new Font(Global.lanFont, Font.PLAIN, 18));
+	        	
+	        	pLanguage.setOpaque(false);
 	        	pLanguage.add(lLanguage);
 	        	pLanguage.add(cbLanguages);
 
 	            panel.setLayout(new BorderLayout());
 	            panel.setBorder(BorderFactory.createEmptyBorder(50, 50, 20, 20));
 	            panel.add(pLanguage, BorderLayout.NORTH);
+	            
+	            /*
+	             * restart button
+	             */
+	            
+	            JButton rButton = new JButton(bundle.getString("rButton")); 
+	            rButton.setFont(new Font(Global.lanFont, Font.PLAIN, 18));
+	            
+	            rButton.addActionListener(e -> {
+	                // STEP A: Get the current selection from the UI
+	                String selected = (String) cbLanguages.getSelectedItem();
+	                String langCode = selected.equals("Latviešu") ? "lv" : "en";
+	                
+	                // STEP B: Save it to the file so it persists
+	                FileUser.settingsWriter("lan", langCode);
+	                
+	                // STEP C: Reload the bundle in Global.java
+	                // This is the most important part! It updates Global.bundle in memory.
+	                Global.settingsUpdater();
+	                
+	                // STEP D: The "Hard Reset"
+	                f.dispose();         // Close the current window
+	                Panel.panel();       // Launch a brand new window using the updated bundle
+	            });
+
+	            // Layout
+	            panel.setLayout(new BorderLayout());
+	            panel.setBorder(BorderFactory.createEmptyBorder(50, 50, 20, 20));
+	            
+	            panel.add(pLanguage, BorderLayout.NORTH);
+	            
+	            // Putting the button in a panel to control its size
+	            JPanel pRestart = new JPanel(new FlowLayout(FlowLayout.LEFT));
+	            pRestart.setOpaque(false);
+	            pRestart.add(rButton);
+	            panel.add(pRestart, BorderLayout.CENTER);
+	            
 	            break;
 	    }
 
@@ -98,9 +171,9 @@ public class Panel {
 	}
 
 	
+	@SuppressWarnings("unused")
 	static void TopButton(JButton b) {		
-		b.setMaximumSize(new Dimension(b.getText().length() * 15, 40));
-		b.setFont(new Font("Arial", Font.BOLD, 30));
+		b.setFont(new Font(Global.lanFont, Font.BOLD, 30));
 		b.setContentAreaFilled(false);
 		b.setBorderPainted(false);
 		b.setUI(new BasicButtonUI());
@@ -180,9 +253,8 @@ public class Panel {
 	}
 	
 	public static void panel() {
-		
-		JFrame f = new JFrame();
-		
+		bundle = Global.bundle;
+		f = new JFrame();
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		
 		JPanel trans = new JPanel(new BorderLayout()) {

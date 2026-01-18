@@ -21,20 +21,47 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
+import files.FileUser;
 import frame.Main;
 
 public class Global {
 	
+	static public String lanFont = "Consolas";
+	static public Locale locale;
+	public static ResourceBundle bundle;
+
+	
+	public static void startUpSettings() {
+        try {
+            String lan = FileUser.settingsReader("lan");
+            locale = Locale.of(lan != null ? lan : "en");
+            
+            bundle = ResourceBundle.getBundle("text.text", locale);
+        } catch (Exception e) {
+        	
+            System.err.println("Could not load bundle, using fallback.");
+            bundle = ResourceBundle.getBundle("text.text", Locale.ENGLISH);
+            e.printStackTrace();
+        }
+    }
+	
+	public static void settingsUpdater() {
+		String lan = FileUser.settingsReader("lan");
+		locale = Locale.of(lan);
+		
+		bundle = ResourceBundle.getBundle("text.text", locale);
+		
+	}
+	
 	public static void closeWindow(JFrame f) {
 		JFrame fClose = new JFrame();
 		
-		Locale locale = Locale.of("lv");
 
-		ResourceBundle bundle = ResourceBundle.getBundle("text.text", locale);
 
 		
 		f.addWindowListener(new WindowAdapter() {
-		    @Override
+		    @SuppressWarnings("unused")
+			@Override
 		    public void windowClosing(WindowEvent e) {
 		        fClose.setSize(600, 400);
 		        fClose.setLocationRelativeTo(f);
@@ -59,7 +86,7 @@ public class Global {
 		        pBackground.setLayout(new BorderLayout());
 
 		        JLabel lText = new JLabel(bundle.getString("fClose_text"));
-		        lText.setFont(new Font("Arial", Font.BOLD, 20));
+		        lText.setFont(new Font(lanFont, Font.BOLD, 20));
 		        lText.setHorizontalAlignment(SwingConstants.CENTER);
 		        lText.setForeground(new Color(240, 240, 240));
 		        lText.setBorder(new EmptyBorder(10, 10, 10, 10));
