@@ -42,8 +42,14 @@ Aktivitāšu diagramma
 Klašu diagramma
 
 ![classdiagram_pd (1)](https://github.com/user-attachments/assets/a611a368-cb42-4ef5-a137-6cefb2f4a79e)
-</i>
 
+
+Jaunās diagrammas:
+
+<img width="2001" height="801" alt="useCase_pizzaSim drawio" src="https://github.com/user-attachments/assets/d4ee19f2-257f-43d9-a19c-28a2521552cf" />
+
+
+</i>
 <img width="345" height="360" alt="appImage" src="https://github.com/user-attachments/assets/4f934d8f-7098-493d-8437-fb340001b82e" /><img width="345" height="360" alt="appImage" src="https://github.com/user-attachments/assets/de65a427-7c5e-406a-b71b-3fb02ca8715b" />
 
 
