@@ -8,7 +8,6 @@ import frame.Main;
 
 public class FileUser {
 
-    // Always use user home folder for config
     private static final String CONFIG_DIR =
             System.getProperty("user.home") + File.separator + ".myapp";
     private static final String SETTINGS_FILE = CONFIG_DIR + File.separator + "settings.txt";
@@ -69,7 +68,7 @@ public class FileUser {
             e.printStackTrace();
         }
 
-        return "en"; // default
+        return "en";
     }
 
     // ==========================
@@ -91,7 +90,6 @@ public class FileUser {
                 lines.add(line);
             }
 
-            // If setting not found, add it
             if (!found) lines.add(setting + "=" + newSetting);
 
         } catch (IOException e) {

@@ -17,18 +17,38 @@ import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.swing.JOptionPane;
 import files.FileUser;
 import technical.Global;
+import technical.SoundPlayer;
 
 public class Main {
 
     static ResourceBundle bundle;
+    static JPanel pBackground;
 
+    
+    private static JPanel BackgroundPanel(String imagePath) {
+        return new JPanel() {
+            /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			private Image background = new ImageIcon(getClass().getResource(imagePath)).getImage();
+
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                g.drawImage(background, 0, 0, getWidth(), getHeight(), this);
+            }
+        };
+    }
+
+    
     public static void main(String[] args) {
         try {
             // 1. Load settings and bundle FIRST
@@ -52,19 +72,13 @@ public class Main {
 	private static void startUI() {
 
         JFrame f = new JFrame();
+        
+        SoundPlayer player = new SoundPlayer();
 
-        JPanel pBackground = new JPanel() {
-            private static final long serialVersionUID = 1L;
-            Image background = new ImageIcon(
-                    getClass().getResource("/images/logInBackground.png")
-            ).getImage();
 
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                g.drawImage(background, 0, 0, getWidth(), getHeight(), this);
-            }
-        };
+        pBackground = BackgroundPanel("/images/logInBackground.png");
+        f.setContentPane(pBackground);
+
 
         try {
             for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
@@ -133,8 +147,24 @@ public class Main {
         tidInput.setText("1000");
 
         tidInput.addActionListener(e -> {
-            String id = tidInput.getText();
+            String id = tidInput.getText().trim();
+            
+            if (id.equals("1987")) {
+            	
+            	plogInMenu.setVisible(false);
+            	
+                try {
+                    pBackground.getClass().getMethod("setBackgroundImage", String.class).invoke(pBackground, "/images/goldenFreddy.jpg");
+                    player.loadFromClasspath("/sound/goldenFreddyScream.wav");
+                    player.play(() -> {
+                        System.exit(0);
+                    });
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
 
+            
             if (!FileUser.checkEmployee(id)) {
                 tidInput.setText("");
                 llogInTextIncorrect.setForeground(new Color(250, 30, 30));

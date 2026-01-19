@@ -99,7 +99,6 @@ public class Panel {
 	    row.add(Box.createHorizontalGlue());
 	    row.add(spinner);
 
-	    // store reference for later price calculation
 	    row.putClientProperty("item", item);
 	    row.putClientProperty("spinner", spinner);
 
@@ -338,7 +337,6 @@ public class Panel {
 	            ActionListener priceUpdater = e -> {
 	                double total = 0.0;
 	                
-	                // Only calculate pizza price if the checkbox is selected
 	                if (cbIncludePizza.isSelected()) {
 	                    total += calculateTotal(cbCrust, cbSauce, toppingBoxes, cbSize);
 	                }
@@ -352,13 +350,10 @@ public class Panel {
 	                lTotalPrice.setText(String.format("€%.2f", total));
 	            };
 
-	            // Add the listener to the new checkbox so the price updates instantly
 	            cbIncludePizza.addActionListener(priceUpdater);
 
 	            cbDelivery.addActionListener(e -> {
 	                tfAddress.setEnabled(cbDelivery.isSelected());
-	                // Only randomize fee if it's a fresh click, otherwise keep existing if editing logic requires it
-	                // Simplified here: Always 5-25 range on toggle
 	                deliveryFee[0] = cbDelivery.isSelected() ? 5 + (Math.random() * 20) : 0.0;
 	                priceUpdater.actionPerformed(null);
 	            });
@@ -430,18 +425,15 @@ public class Panel {
 	                 deliveryFee[0] = 5.0; 
 	             }
 	             
-	             // START OF PIZZA CHECK
 	             if (orderToEdit.crust != null) {
 	                 cbIncludePizza.setSelected(true); 
 	                 
-	                 // Match Crust
 	                 for(int i=0; i<cbCrust.getItemCount(); i++) {
 	                     if(cbCrust.getItemAt(i).getName().equals(orderToEdit.crust.getName())) {
 	                         cbCrust.setSelectedIndex(i); break;
 	                     }
 	                 }
 	                 
-	                 // Match Sauce
 	                 if (orderToEdit.sauce != null) {
 	                     for(int i=0; i<cbSauce.getItemCount(); i++) {
 	                         if(cbSauce.getItemAt(i).getName().equals(orderToEdit.sauce.getName())) {
@@ -452,7 +444,6 @@ public class Panel {
 	                 
 	                 cbSize.setSelectedItem(orderToEdit.size);
 
-	                 // Match Toppings
 	                 for (ItemCheckBox box : toppingBoxes) {
 	                     for (Item t : orderToEdit.toppings) {
 	                         if (box.getItem().getName().equals(t.getName())) {
@@ -461,12 +452,9 @@ public class Panel {
 	                     }
 	                 }
 	             } else {
-	                 // IMPORTANT: Uncheck if there is no pizza
 	                 cbIncludePizza.setSelected(false);
 	             }
-	             // END OF PIZZA CHECK (Old duplicate code was here - REMOVE IT)
 
-	             // Match Extras (Drinks/Snacks) - Keep this outside the pizza check
 	             for (JPanel p : extraPanels) {
 	                 Item item = (Item) p.getClientProperty("item");
 	                 JSpinner spinner = (JSpinner) p.getClientProperty("spinner");
@@ -566,6 +554,10 @@ public class Panel {
 	            break;
 
 	        case "settings":
+	        	JPanel settingsPanel = new JPanel();
+	            settingsPanel.setLayout(new BoxLayout(settingsPanel, BoxLayout.Y_AXIS));
+	            settingsPanel.setOpaque(false);
+	            
 	            JPanel pLanguage = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
 	            JLabel lLanguage = new JLabel(bundle.getString("lLanguage"));
 	            String[] languages = {"Latviešu", "English", "Русский"};
@@ -594,31 +586,57 @@ public class Panel {
 	            pLanguage.setOpaque(false);
 	            pLanguage.add(lLanguage);
 	            pLanguage.add(cbLanguages);
+	            
+	            // --- Resizable Window Setting ---
+	            JPanel pResizable = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+	            pResizable.setOpaque(false);
 
+	            String currentResize = FileUser.settingsReader("resizable");
+	            boolean isCurrentlyResizable = currentResize.equals("true");
+
+	            JCheckBox cbResizable = new JCheckBox(bundle.getString("settingResizable"), isCurrentlyResizable);
+	            cbResizable.setFont(new Font(Global.lanFont, Font.PLAIN, 18));
+	            cbResizable.setOpaque(false);
+
+	            cbResizable.addActionListener(e -> {
+	                FileUser.settingsWriter("resizable", String.valueOf(cbResizable.isSelected()));
+
+	            });
+
+	            pResizable.add(cbResizable);
+	            
+	            /*
+	             * restart
+	             */
 	            JButton rButton = new JButton(bundle.getString("rButton")); 
 	            rButton.setFont(new Font(Global.lanFont, Font.PLAIN, 18));
 	            
 	            rButton.addActionListener(e -> {
-	                // Get current selection and ensure it is saved before restart
 	                String selectedStr = (String) cbLanguages.getSelectedItem();
 	                String langCode = getLangCode(selectedStr);
 	                
 	                FileUser.settingsWriter("lan", langCode);
 	                Global.settingsUpdater();
 	                
-	                // Refresh the UI
 	                f.dispose();
 	                Panel.panel();
 	            });
 
 	            panel.setLayout(new BorderLayout());
 	            panel.setBorder(BorderFactory.createEmptyBorder(50, 50, 20, 20));
-	            panel.add(pLanguage, BorderLayout.NORTH);
+	            settingsPanel.add(pLanguage);
+	            settingsPanel.add(Box.createVerticalStrut(20));
+	            settingsPanel.add(pResizable);
+	            settingsPanel.add(Box.createVerticalStrut(30));
 	            
 	            JPanel pRestart = new JPanel(new FlowLayout(FlowLayout.LEFT));
 	            pRestart.setOpaque(false);
 	            pRestart.add(rButton);
-	            panel.add(pRestart, BorderLayout.CENTER);
+	            settingsPanel.add(pRestart);
+
+	            panel.setLayout(new BorderLayout());
+	            panel.setBorder(BorderFactory.createEmptyBorder(50, 50, 20, 20));
+	            panel.add(settingsPanel, BorderLayout.NORTH);
 	            break;
 	    }
 
@@ -735,7 +753,6 @@ public class Panel {
             }
         };
         
-        // FIXED: Removed "JPanel" from the start. Now it assigns to the static class variable.
         contentWrapper = new JPanel(new BorderLayout());
         contentWrapper.setBorder(new EmptyBorder(40, 40, 40, 40));
         contentWrapper.setOpaque(false);
@@ -752,14 +769,14 @@ public class Panel {
 			f.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 			f.setLayout(new BorderLayout());
 			f.setLocationRelativeTo(null);
-			f.setResizable(false);
+			String resizableSetting = FileUser.settingsReader("resizable");
+			f.setResizable(resizableSetting.equals("true"));
 			f.setTitle(bundle.getString("JFrame_title"));
 			f.setIconImage(new ImageIcon(Main.class.getResource("/images/appImage.png")).getImage().getScaledInstance(-1, -1, Image.SCALE_SMOOTH));
 			
 			/*
 			 * top bar
 			 */
-            // FIXED: Removed "JButton" from the start.
 			bRegister = new JButton(bundle.getString("register"));
 			bLookUp = new JButton(bundle.getString("lookup_orders"));
 			bSettings = new JButton(bundle.getString("settings"));
@@ -830,7 +847,6 @@ public class Panel {
 			trans.setOpaque(false);
 			f.add(trans, BorderLayout.CENTER);
 
-            // INITIAL VIEW: Set a default view so the screen isn't blank on startup
             bRegister.setEnabled(false);
             contentWrapper.add(OptionSwitch("register", null), BorderLayout.CENTER);
 
