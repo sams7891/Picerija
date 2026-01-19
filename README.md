@@ -8,18 +8,18 @@ izies pilot programmu dažās tās vietās.
 - Pamati priekš vairāku valodas atbalsta
 - Pirms aizver programmu pārbauda vai operētājs tiešām to vēlas darīt
 - Ja ekrāna izmērs ir 1920 x 1080 tad programma tiks atvērta pilnekrāna režīmā citādāk lodziņš 1920 x 1080 izmēros
-
+- Pasūtijuma sistēma
+- Darbinieka ielogošanās sistēma
+- Iestatījumi
+- Pilns atbalsts priekš latviešu un angļu valodas
+- Atbalsts priekš krievu valodas
+- Atbalsts priekš audio
 ## Programmas plānotās daļas
 
-- Piegādes sistēma (Tiks norādīta sīkāka vēlāk)
-- Pasūtijuma sistēma (Tiks norādīta vēlāk)
 - Pasūtijumu reģistrs
-- Darbinieka ielogošanās sistēma
 - Darbību reģistrēšanas sistēma
 - Darbinieku apmācības režīms (Plānots priekš 1.1v)
 - Sistēmas pamācība
-- Iestatījumi
-- Pilns atbalsts priekš latviešu un angļu valodas
 
 ## Programmas diagrammas un veidošanas apraksts
 <b>Šī sadaļa ar programmas izstrādi var ļoti mainīties mainīties</b>
